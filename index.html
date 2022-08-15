@@ -1,15 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>菜鸟教程(runoob.com)</title>
+    <meta charset="utf-8">
+    <title>菜鸟教程(runoob.com)</title>
     <link rel="stylesheet" type="text/css" href="http://www.example.com/theme.css"/>
     <script type="text/javascript" src="client.js"></script>
+    <script>
+        function testNetRequest(){
+                alert("调用开始");
+                var http = {};
+                http.quest = function (option, callback) {
+                var url = option.url;
+                var method = option.method;
+                var data = option.data;
+                var timeout = option.timeout || 0;
+                var xhr = new XMLHttpRequest();
+                (timeout > 0) && (xhr.timeout = timeout);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        var result = xhr.responseText;
+                        try { result = JSON.parse(xhr.responseText); } catch (e) { }
+                        callback && callback(null, result);
+                    } else {
+                        callback && callback('status: ' + xhr.status);
+                    }
+                    }
+                }.bind(this);
+                xhr.open(method, url, true);
+                if (typeof data === 'object') {
+                    try {
+                    data = JSON.stringify(data);
+                    } catch (e) { }
+                }
+                xhr.send(data);
+                xhr.ontimeout = function () {
+                    callback && callback('timeout');
+                    console.log('%c连%c接%c超%c时', 'color:red', 'color:orange', 'color:purple', 'color:green');
+                };
+                };
+                http.get = function (url, callback) {
+                var option = url.url ? url : { url: url };
+                option.method = 'get';
+                this.quest(option, callback);
+                };
+                http.post = function (option, callback) {
+                option.method = 'post';
+                this.quest(option, callback);
+                };
+
+                //普通get请求
+                http.get('http://www.baidu.com', function (err, result) {
+                    // 这里对结果进行处理
+                });
+
+                //定义超时时间(单位毫秒)
+                http.get({ url: 'http://www.baidu1.com', timeout: 1000 }, function (err, result) {
+                    // 这里对结果进行处理
+                });
+
+                //post请求
+                http.post({ url: 'http://www.baidu2.com', data: '123', timeout: 1000 }, function (err, result) {
+                    // 这里对结果进行处理
+                });
+                alert("调用结束");
+            }
+    </script>
 </head>
 <body>
 
 	<h1>我的第一个标题</h1>
 	<p>我的第一个段落。</p>
+    <button width="200px" height="40px" onclick="testNetRequest()">测试网络请求</p>
 	<iframe src="http://www.runoob.com" width="100%" height="500"></iframe>
 	<iframe src="https://www.baidu.com/" width="100%" height="500"></iframe>
 	<iframe src="file:android_asset/test.html" width="100%" height="500"></iframe>
